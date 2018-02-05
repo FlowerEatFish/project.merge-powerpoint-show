@@ -1,13 +1,13 @@
 #### To-do list:
 
-[ ] Set file list.
+[x] Create new PowerPoint file as main (main-slideshow.pptx).
 
-[ ] Download and replace files via URL.
+[x] Save and replace main-slideshow.pptx.
 
-[ ] Create new PowerPoint file as main (main.pptx).
+[x] Collect all slides from other PowerPoint into main-slideshow.pptx.
 
-[ ] Save and replace main.pptx.
+[ ] Set animation for slideshow.
 
-[ ] Collect all slides from other PowerPoint into main.pptx.
+[x] Set period for slideshow.
 
-[ ] Set animation, period, and loop mode.
+[x] Set loop mode for slideshow.
