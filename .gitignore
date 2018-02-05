@@ -1,3 +1,17 @@
+# OpenDocument file
+*.odt
+*.ods
+*.odg
+*.odp
+*.odf
+*.odb
+
+# Microsoft office
+*.tmp
+*.doc*
+*.xls*
+*.ppt*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
