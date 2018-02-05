@@ -23,6 +23,8 @@ def run_ppt_app():
         count = temp_ppt.Slides.Count
         temp_ppt.Close()
         new_ppt.Slides.InsertFromFile(path, 0, 1, count)
+    # set animation for slideshow
+    set_slide_animation(new_ppt)
     # save and slideshow ppt
     save_new_ppt(new_ppt, ppt_dir, new_ppt_name)
     run_slideshow(new_ppt)
@@ -55,6 +57,12 @@ def is_ppt_format(file_format):
     if file_format.find(ppt_format) != -1:
         return True
     return False
+
+def set_slide_animation(app):
+    '''set animation for slideshow'''
+    count = app.Slides.Count
+    for index in range(count):
+        app.Slides(index+1).SlideShowTransition.EntryEffect = 3895
 
 def run_slideshow(app):
     '''slideshow first, then run loop_slideshow function for loop'''
