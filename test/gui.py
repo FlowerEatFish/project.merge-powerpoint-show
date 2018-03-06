@@ -6,8 +6,8 @@ import wx
 
 class MainWindow(wx.Dialog):
     def __init__(self, parent, title):
-        super(MainWindow, self).__init__(parent, title=title)
-        # wx.Dialog.__init__(self, parent, title=title)
+        # super(MainWindow, self).__init__(parent, title=title)
+        wx.Dialog.__init__(self, parent, title=title)
         self.database = self.fetch_data()
         self.initial_ui(self.database)
         self.Centre()
@@ -47,8 +47,8 @@ class MainWindow(wx.Dialog):
         # 播放設置區
         text5 = wx.StaticText(self, label="每隔幾秒後播放下一張投影片：")
         sizer1.Add(text5, pos=(3, 0), span=(1, 2), flag=wx.LEFT | wx.ALIGN_CENTER_VERTICAL, border=5)
-        text6 = wx.StaticText(self, label=str(database['duration']))
-        sizer1.Add(text6, pos=(3, 2), span=(1, 2), flag=wx.LEFT | wx.ALIGN_CENTER_VERTICAL, border=5)
+        self.text6 = wx.StaticText(self, label=str(database['duration']))
+        sizer1.Add(self.text6, pos=(3, 2), span=(1, 2), flag=wx.LEFT | wx.ALIGN_CENTER_VERTICAL, border=5)
         button3 = wx.Button(self, label="設置時間")
         button3.Bind(wx.EVT_BUTTON, self.on_set_duration)
         sizer1.Add(button3, pos=(3, 4), flag=wx.EXPAND | wx.RIGHT, border=5)
@@ -80,8 +80,8 @@ class MainWindow(wx.Dialog):
 
         text7 = wx.StaticText(self, label="刪除超過幾天的檔案：")
         sizer2.Add(text7, pos=(0, 0), span=(1, 2), flag=wx.LEFT | wx.TOP | wx.BOTTOM | wx.ALIGN_CENTER_VERTICAL, border=5)
-        text8 = wx.StaticText(self, label=str(database['expiration-date']))
-        sizer2.Add(text8, pos=(0, 2), span=(1, 1), flag=wx.LEFT | wx.TOP | wx.BOTTOM | wx.ALIGN_CENTER_VERTICAL, border=5)
+        self.text8 = wx.StaticText(self, label=str(database['expiration-date']))
+        sizer2.Add(self.text8, pos=(0, 2), span=(1, 1), flag=wx.LEFT | wx.TOP | wx.BOTTOM | wx.ALIGN_CENTER_VERTICAL, border=5)
         self.button4 = wx.Button(self, label="設置時間")
         self.button4.Bind(wx.EVT_BUTTON, self.on_set_expiration_date)
         if not database['clean-run']:
@@ -90,8 +90,8 @@ class MainWindow(wx.Dialog):
 
         text9 = wx.StaticText(self, label="如果全部檔案已過期，保留幾個最近建立的檔案：")
         sizer2.Add(text9, pos=(1, 0), span=(1, 2), flag=wx.LEFT | wx.BOTTOM | wx.ALIGN_CENTER_VERTICAL, border=5)
-        text10 = wx.StaticText(self, label=str(database['keep-file']))
-        sizer2.Add(text10, pos=(1, 2), span=(1, 2), flag=wx.LEFT | wx.BOTTOM | wx.ALIGN_CENTER_VERTICAL, border=5)
+        self.text10 = wx.StaticText(self, label=str(database['keep-file']))
+        sizer2.Add(self.text10, pos=(1, 2), span=(1, 2), flag=wx.LEFT | wx.BOTTOM | wx.ALIGN_CENTER_VERTICAL, border=5)
         self.button5 = wx.Button(self, label="設置數量")
         self.button5.Bind(wx.EVT_BUTTON, self.on_set_amount_of_keep_file)
         if not database['clean-run']:
@@ -127,16 +127,40 @@ class MainWindow(wx.Dialog):
             return
 
     def on_set_start_time(self, event):
-        SettingWindow(self, title="幾秒後開始運行程式", min_range=5, max_range=600, unit="秒", key="start-time")
+        dlg = SettingWindow(self, title="幾秒後開始運行程式", min_range=5, max_range=600, unit="秒")
+        setting = dlg.ShowModal()
+        if setting == wx.ID_OK:
+            self.database['start-time'] = int(dlg.textctrl1.GetValue())
+            self.text4.Label = str(self.database['start-time'])
+            self.update_and_save_database()
+        dlg.Destroy()
 
     def on_set_duration(self, event):
-        SettingWindow(self, title="每隔幾秒後播放下一張投影片", min_range=5, max_range=600, unit="秒", key="duration")
+        dlg = SettingWindow(self, title="每隔幾秒後播放下一張投影片", min_range=5, max_range=600, unit="秒")
+        setting = dlg.ShowModal()
+        if setting == wx.ID_OK:
+            self.database['duration'] = int(dlg.textctrl1.GetValue())
+            self.text6.Label = str(self.database['duration'])
+            self.update_and_save_database()
+        dlg.Destroy()
 
     def on_set_expiration_date(self, event):
-        SettingWindow(self, title="刪除超過幾天的檔案", min_range=1, max_range=180, unit="天", key="expiration-date")
+        dlg = SettingWindow(self, title="刪除超過幾天的檔案", min_range=1, max_range=180, unit="天")
+        setting = dlg.ShowModal()
+        if setting == wx.ID_OK:
+            self.database['expiration-date'] = int(dlg.textctrl1.GetValue())
+            self.text8.Label = str(self.database['expiration-date'])
+            self.update_and_save_database()
+        dlg.Destroy()
 
     def on_set_amount_of_keep_file(self, event):
-        SettingWindow(self, title="保留幾個最近建立的檔案", min_range=0, max_range=100, unit="個", key="keep-file")
+        dlg = SettingWindow(self, title="保留幾個最近建立的檔案", min_range=0, max_range=100, unit="個")
+        setting = dlg.ShowModal()
+        if setting == wx.ID_OK:
+            self.database['keep-file'] = int(dlg.textctrl1.GetValue())
+            self.text10.Label = str(self.database['keep-file'])
+            self.update_and_save_database()
+        dlg.Destroy()
 
     def autorun_on_checked(self, event):
         result = event.GetEventObject()
@@ -164,7 +188,7 @@ class MainWindow(wx.Dialog):
     def on_run(self, event):
         self.button6.Disable()
         self.button7.Enable()
-    
+
     def on_stop(self, event):
         self.button6.Enable()
         self.button7.Disable()
@@ -177,59 +201,31 @@ class MainWindow(wx.Dialog):
             json.dump(self.database, outfile)
 
 class SettingWindow(wx.Dialog):
-    def __init__(self, parent, key, title="設定", min_range=5, max_range=100, unit=None):
-        super(SettingWindow, self).__init__(parent, title=title)
-        # wx.Dialog.__init__(self, parent, title=title)
-        self.key = key
-        self.database = self.fetch_data()
+    def __init__(self, parent, title="設定", min_range=5, max_range=100, unit=None):
+        # super(SettingWindow, self).__init__(parent, title=title)
+        wx.Dialog.__init__(self, parent, title=title)
         self.initial_ui(min_range=min_range, max_range=max_range, unit=unit)
         self.Centre()
         self.Show()
-    
-    def fetch_data(self):
-        local_directory = os.path.dirname(os.path.abspath(__file__))
-        database_name = "config.json"
-        database_path = os.path.join(local_directory, database_name)
-        result = json.load(open(database_path))
-        return result
 
     def initial_ui(self, min_range, max_range, unit):
         sizer1 = wx.GridBagSizer(2, 3)
 
-        text = "設定數值： (%d~%d %s)" %  (min_range, max_range, unit)
+        text = "設定數值： (%d~%d %s)" % (min_range, max_range, unit)
         text1 = wx.StaticText(self, label=text)
         sizer1.Add(text1, pos=(0, 0), span=(1, 1), flag=wx.LEFT | wx.ALIGN_CENTER_VERTICAL, border=5)
 
         self.textctrl1 = wx.TextCtrl(self)
         sizer1.Add(self.textctrl1, pos=(0, 1), span=(1, 2), flag=wx.ALL | wx.EXPAND | wx.ALIGN_CENTER_VERTICAL, border=5)
 
-        button1 = wx.Button(self, label="提交")
-        button1.Bind(wx.EVT_BUTTON, self.on_submit)
+        button1 = wx.Button(self, id=wx.ID_OK, label="提交")
         sizer1.Add(button1, pos=(1, 0), span=(1, 1), flag=wx.ALL | wx.EXPAND, border=5)
 
-        button2 = wx.Button(self, label="取消")
-        button2.Bind(wx.EVT_BUTTON, self.on_cancel)
+        button2 = wx.Button(self, id=wx.ID_CANCEL, label="取消")
         sizer1.Add(button2, pos=(1, 2), span=(1, 1), flag=wx.ALL | wx.EXPAND, border=5)
 
         sizer1.Fit(self)
         self.SetSizer(sizer1)
-
-    def on_submit(self, event):
-        key = self.key
-        value = int(self.textctrl1.GetValue())
-        self.database[key] = value
-        self.update_and_save_database()
-        self.Destroy()
-
-    def on_cancel(self, event):
-        self.Destroy()
-    
-    def update_and_save_database(self):
-        local_directory = os.path.dirname(os.path.abspath(__file__))
-        database_name = "config.json"
-        database_path = os.path.join(local_directory, database_name)
-        with open(database_path, 'w') as outfile:
-            json.dump(self.database, outfile)
 
 if __name__ == '__main__':
     app = wx.App()
