@@ -1,10 +1,11 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+'''Construction of UI and events'''
 import json
 import os
 import wx
 
+
 class MainWindow(wx.Dialog):
+    '''Render main window and control center'''
     def __init__(self, parent, title):
         # super(MainWindow, self).__init__(parent, title=title)
         wx.Dialog.__init__(self, parent, title=title)
@@ -13,7 +14,9 @@ class MainWindow(wx.Dialog):
         self.Centre()
         self.Show()
 
-    def fetch_data(self):
+    @staticmethod
+    def fetch_data():
+        '''Load config data from external file config.json'''
         local_directory = os.path.dirname(os.path.abspath(__file__))
         database_name = "config.json"
         database_path = os.path.join(local_directory, database_name)
@@ -21,34 +24,42 @@ class MainWindow(wx.Dialog):
         return result
 
     def initial_ui(self, database):
+        '''Render all UI and events such as buttons, texts, etc'''
         sizer1 = wx.GridBagSizer(5, 5)
 
         line = wx.StaticLine(self)
-        sizer1.Add(line, pos=(0, 0), span=(1, 5), flag=wx.EXPAND | wx.ALIGN_CENTER, border=5)
+        sizer1.Add(line, pos=(0, 0), span=(1, 5),
+                   flag=wx.EXPAND | wx.ALIGN_CENTER, border=5)
 
         # 路徑設置區
         text1 = wx.StaticText(self, label="資料夾路徑：")
-        sizer1.Add(text1, pos=(1, 0), span=(1, 1), flag=wx.LEFT | wx.ALIGN_CENTER_VERTICAL, border=5)
+        sizer1.Add(text1, pos=(1, 0), span=(1, 1),
+                   flag=wx.LEFT | wx.ALIGN_CENTER_VERTICAL, border=5)
         self.text2 = wx.StaticText(self, label=database['path'])
-        sizer1.Add(self.text2, pos=(1, 1), span=(1, 3), flag=wx.LEFT | wx.ALIGN_CENTER_VERTICAL, border=5)
+        sizer1.Add(self.text2, pos=(1, 1), span=(1, 3),
+                   flag=wx.LEFT | wx.ALIGN_CENTER_VERTICAL, border=5)
         button1 = wx.Button(self, label="設置路徑")
         button1.Bind(wx.EVT_BUTTON, self.on_select_dir)
         sizer1.Add(button1, pos=(1, 4), flag=wx.EXPAND | wx.RIGHT, border=5)
 
         # 運行設置區
         text3 = wx.StaticText(self, label="幾秒後開始運行程式：")
-        sizer1.Add(text3, pos=(2, 0), span=(1, 2), flag=wx.LEFT | wx.ALIGN_CENTER_VERTICAL, border=5)
+        sizer1.Add(text3, pos=(2, 0), span=(1, 2),
+                   flag=wx.LEFT | wx.ALIGN_CENTER_VERTICAL, border=5)
         self.text4 = wx.StaticText(self, label=str(database['start-time']))
-        sizer1.Add(self.text4, pos=(2, 2), span=(1, 2), flag=wx.LEFT | wx.ALIGN_CENTER_VERTICAL, border=5)
+        sizer1.Add(self.text4, pos=(2, 2), span=(1, 2),
+                   flag=wx.LEFT | wx.ALIGN_CENTER_VERTICAL, border=5)
         button2 = wx.Button(self, label="設置時間")
         button2.Bind(wx.EVT_BUTTON, self.on_set_start_time)
         sizer1.Add(button2, pos=(2, 4), flag=wx.EXPAND | wx.RIGHT, border=5)
 
         # 播放設置區
         text5 = wx.StaticText(self, label="每隔幾秒後播放下一張投影片：")
-        sizer1.Add(text5, pos=(3, 0), span=(1, 2), flag=wx.LEFT | wx.ALIGN_CENTER_VERTICAL, border=5)
+        sizer1.Add(text5, pos=(3, 0), span=(1, 2),
+                   flag=wx.LEFT | wx.ALIGN_CENTER_VERTICAL, border=5)
         self.text6 = wx.StaticText(self, label=str(database['duration']))
-        sizer1.Add(self.text6, pos=(3, 2), span=(1, 2), flag=wx.LEFT | wx.ALIGN_CENTER_VERTICAL, border=5)
+        sizer1.Add(self.text6, pos=(3, 2), span=(1, 2),
+                   flag=wx.LEFT | wx.ALIGN_CENTER_VERTICAL, border=5)
         button3 = wx.Button(self, label="設置時間")
         button3.Bind(wx.EVT_BUTTON, self.on_set_duration)
         sizer1.Add(button3, pos=(3, 4), flag=wx.EXPAND | wx.RIGHT, border=5)
@@ -69,7 +80,8 @@ class MainWindow(wx.Dialog):
         checkbox2.Bind(wx.EVT_CHECKBOX, self.clean_on_checked)
         boxsizer1.Add(checkbox2, flag=wx.LEFT, border=5)
 
-        sizer1.Add(boxsizer1, pos=(4, 0), span=(1, 5), flag=wx.EXPAND | wx.TOP | wx.LEFT | wx.RIGHT, border=5)
+        sizer1.Add(boxsizer1, pos=(4, 0), span=(1, 5),
+                   flag=wx.EXPAND | wx.TOP | wx.LEFT | wx.RIGHT, border=5)
 
         # 清理選項區
         sb2 = wx.StaticBox(self, label="清理功能", style=wx.ALIGN_CENTER)
@@ -79,26 +91,36 @@ class MainWindow(wx.Dialog):
         boxsizer2.Add(sizer2)
 
         text7 = wx.StaticText(self, label="刪除超過幾天的檔案：")
-        sizer2.Add(text7, pos=(0, 0), span=(1, 2), flag=wx.LEFT | wx.TOP | wx.BOTTOM | wx.ALIGN_CENTER_VERTICAL, border=5)
-        self.text8 = wx.StaticText(self, label=str(database['expiration-date']))
-        sizer2.Add(self.text8, pos=(0, 2), span=(1, 1), flag=wx.LEFT | wx.TOP | wx.BOTTOM | wx.ALIGN_CENTER_VERTICAL, border=5)
+        sizer2.Add(text7, pos=(0, 0), span=(1, 2),
+                   flag=wx.ALL | wx.ALIGN_CENTER_VERTICAL, border=5)
+        self.text8 = wx.StaticText(self,
+                                   label=str(database['expiration-date']))
+        sizer2.Add(self.text8, pos=(0, 2), span=(1, 1),
+                   flag=wx.ALL | wx.ALIGN_CENTER_VERTICAL, border=5)
         self.button4 = wx.Button(self, label="設置時間")
         self.button4.Bind(wx.EVT_BUTTON, self.on_set_expiration_date)
         if not database['clean-run']:
             self.button4.Disable()
-        sizer2.Add(self.button4, pos=(0, 4), flag=wx.EXPAND | wx.BOTTOM, border=5)
+        sizer2.Add(self.button4, pos=(0, 4),
+                   flag=wx.EXPAND | wx.BOTTOM, border=5)
 
         text9 = wx.StaticText(self, label="如果全部檔案已過期，保留幾個最近建立的檔案：")
-        sizer2.Add(text9, pos=(1, 0), span=(1, 2), flag=wx.LEFT | wx.BOTTOM | wx.ALIGN_CENTER_VERTICAL, border=5)
+        sizer2.Add(text9, pos=(1, 0), span=(1, 2),
+                   flag=wx.LEFT | wx.BOTTOM | wx.ALIGN_CENTER_VERTICAL,
+                   border=5)
         self.text10 = wx.StaticText(self, label=str(database['keep-file']))
-        sizer2.Add(self.text10, pos=(1, 2), span=(1, 2), flag=wx.LEFT | wx.BOTTOM | wx.ALIGN_CENTER_VERTICAL, border=5)
+        sizer2.Add(self.text10, pos=(1, 2), span=(1, 2),
+                   flag=wx.LEFT | wx.BOTTOM | wx.ALIGN_CENTER_VERTICAL,
+                   border=5)
         self.button5 = wx.Button(self, label="設置數量")
         self.button5.Bind(wx.EVT_BUTTON, self.on_set_amount_of_keep_file)
         if not database['clean-run']:
             self.button5.Disable()
-        sizer2.Add(self.button5, pos=(1, 4), flag=wx.EXPAND | wx.BOTTOM, border=5)
+        sizer2.Add(self.button5, pos=(1, 4),
+                   flag=wx.EXPAND | wx.BOTTOM, border=5)
 
-        sizer1.Add(boxsizer2, pos=(5, 0), span=(1, 5), flag=wx.EXPAND | wx.TOP | wx.LEFT | wx.RIGHT, border=5)
+        sizer1.Add(boxsizer2, pos=(5, 0), span=(1, 5),
+                   flag=wx.EXPAND | wx.TOP | wx.LEFT | wx.RIGHT, border=5)
 
         self.button6 = wx.Button(self, label="開始運行")
         sizer1.Add(self.button6, pos=(6, 0), flag=wx.ALL | wx.EXPAND, border=5)
@@ -117,7 +139,9 @@ class MainWindow(wx.Dialog):
         self.SetSizer(sizer1)
 
     def on_select_dir(self, event):
-        dlg = wx.DirDialog(None, "選擇目標資料夾", "", wx.DD_DEFAULT_STYLE | wx.DD_DIR_MUST_EXIST)
+        '''An event for setting directory of loading PowerPoints'''
+        dlg = wx.DirDialog(None, "選擇目標資料夾", "",
+                           style=wx.DD_DEFAULT_STYLE | wx.DD_DIR_MUST_EXIST)
         if dlg.ShowModal() == wx.ID_OK:
             filepath = dlg.GetPath()
             self.database['path'] = filepath
@@ -127,7 +151,9 @@ class MainWindow(wx.Dialog):
             return
 
     def on_set_start_time(self, event):
-        dlg = SettingWindow(self, title="幾秒後開始運行程式", min_range=5, max_range=600, unit="秒")
+        '''An event for setting delay before run sldieshow'''
+        dlg = SettingWindow(self, title="幾秒後開始運行程式",
+                            min_range=5, max_range=600, unit="秒")
         setting = dlg.ShowModal()
         if setting == wx.ID_OK:
             self.database['start-time'] = int(dlg.textctrl1.GetValue())
@@ -136,7 +162,9 @@ class MainWindow(wx.Dialog):
         dlg.Destroy()
 
     def on_set_duration(self, event):
-        dlg = SettingWindow(self, title="每隔幾秒後播放下一張投影片", min_range=5, max_range=600, unit="秒")
+        '''An event for setting duration of sldieshow'''
+        dlg = SettingWindow(self, title="每隔幾秒後播放下一張投影片",
+                            min_range=5, max_range=600, unit="秒")
         setting = dlg.ShowModal()
         if setting == wx.ID_OK:
             self.database['duration'] = int(dlg.textctrl1.GetValue())
@@ -145,7 +173,10 @@ class MainWindow(wx.Dialog):
         dlg.Destroy()
 
     def on_set_expiration_date(self, event):
-        dlg = SettingWindow(self, title="刪除超過幾天的檔案", min_range=1, max_range=180, unit="天")
+        '''An event for setting when will files be deleted after thry are
+           created'''
+        dlg = SettingWindow(self, title="刪除超過幾天的檔案",
+                            min_range=1, max_range=180, unit="天")
         setting = dlg.ShowModal()
         if setting == wx.ID_OK:
             self.database['expiration-date'] = int(dlg.textctrl1.GetValue())
@@ -154,7 +185,9 @@ class MainWindow(wx.Dialog):
         dlg.Destroy()
 
     def on_set_amount_of_keep_file(self, event):
-        dlg = SettingWindow(self, title="保留幾個最近建立的檔案", min_range=0, max_range=100, unit="個")
+        '''An event for setting how many files to keep'''
+        dlg = SettingWindow(self, title="保留幾個最近建立的檔案",
+                            min_range=0, max_range=100, unit="個")
         setting = dlg.ShowModal()
         if setting == wx.ID_OK:
             self.database['keep-file'] = int(dlg.textctrl1.GetValue())
@@ -163,45 +196,53 @@ class MainWindow(wx.Dialog):
         dlg.Destroy()
 
     def autorun_on_checked(self, event):
+        '''An event for setting whether the program immediately run
+           slideshow after run it'''
+        self.database['auto-run'] = False
         result = event.GetEventObject()
         if result.GetValue():
             self.database['auto-run'] = True
-        else:
-            self.database['auto-run'] = False
         self.update_and_save_database()
 
     def clean_on_checked(self, event):
+        '''An event for setting whether clean mode is available'''
+        self.database['clean-run'] = False
+        self.button4.Disable()
+        self.button5.Disable()
         result = event.GetEventObject()
         if result.GetValue():
             self.database['clean-run'] = True
             self.button4.Enable()
             self.button5.Enable()
-        else:
-            self.database['clean-run'] = False
-            self.button4.Disable()
-            self.button5.Disable()
         self.update_and_save_database()
 
     def on_quit(self, event):
+        '''An event for exiting program when it is closed'''
         self.Destroy()
 
     def on_run(self, event):
+        '''An event it the program is ready to run slideshow'''
         self.button6.Disable()
         self.button7.Enable()
 
     def on_stop(self, event):
+        '''An event it the program stop slideshow'''
         self.button6.Enable()
         self.button7.Disable()
 
     def update_and_save_database(self):
+        '''Save config data to external file config.json'''
         local_directory = os.path.dirname(os.path.abspath(__file__))
         database_name = "config.json"
         database_path = os.path.join(local_directory, database_name)
         with open(database_path, 'w') as outfile:
             json.dump(self.database, outfile)
 
+
 class SettingWindow(wx.Dialog):
-    def __init__(self, parent, title="設定", min_range=5, max_range=100, unit=None):
+    '''A pop-up window for setting parameter'''
+    def __init__(self, parent, title="設定",
+                 min_range=5, max_range=100, unit=None):
         # super(SettingWindow, self).__init__(parent, title=title)
         wx.Dialog.__init__(self, parent, title=title)
         self.initial_ui(min_range=min_range, max_range=max_range, unit=unit)
@@ -209,25 +250,31 @@ class SettingWindow(wx.Dialog):
         self.Show()
 
     def initial_ui(self, min_range, max_range, unit):
+        '''Render all UI such as buttons, texts, etc, but no event is setted'''
         sizer1 = wx.GridBagSizer(2, 3)
 
         text = "設定數值： (%d~%d %s)" % (min_range, max_range, unit)
         text1 = wx.StaticText(self, label=text)
-        sizer1.Add(text1, pos=(0, 0), span=(1, 1), flag=wx.LEFT | wx.ALIGN_CENTER_VERTICAL, border=5)
+        sizer1.Add(text1, pos=(0, 0), span=(1, 1),
+                   flag=wx.LEFT | wx.ALIGN_CENTER_VERTICAL, border=5)
 
         self.textctrl1 = wx.TextCtrl(self)
-        sizer1.Add(self.textctrl1, pos=(0, 1), span=(1, 2), flag=wx.ALL | wx.EXPAND | wx.ALIGN_CENTER_VERTICAL, border=5)
+        sizer1.Add(self.textctrl1, pos=(0, 1), span=(1, 2),
+                   flag=wx.ALL | wx.EXPAND | wx.ALIGN_CENTER_VERTICAL,
+                   border=5)
 
         button1 = wx.Button(self, id=wx.ID_OK, label="提交")
-        sizer1.Add(button1, pos=(1, 0), span=(1, 1), flag=wx.ALL | wx.EXPAND, border=5)
+        sizer1.Add(button1, pos=(1, 0), span=(1, 1),
+                   flag=wx.ALL | wx.EXPAND, border=5)
 
         button2 = wx.Button(self, id=wx.ID_CANCEL, label="取消")
-        sizer1.Add(button2, pos=(1, 2), span=(1, 1), flag=wx.ALL | wx.EXPAND, border=5)
+        sizer1.Add(button2, pos=(1, 2), span=(1, 1),
+                   flag=wx.ALL | wx.EXPAND, border=5)
 
         sizer1.Fit(self)
         self.SetSizer(sizer1)
 
 if __name__ == '__main__':
-    app = wx.App()
+    APP = wx.App()
     MainWindow(None, title="電視牆輪播程式")
-    app.MainLoop()
+    APP.MainLoop()
