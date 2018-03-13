@@ -2,6 +2,8 @@
 import json
 import os
 import wx
+from cleaner import Cleaner
+from slideshow import SlideShow
 
 
 class MainWindow(wx.Dialog):
@@ -224,6 +226,9 @@ class MainWindow(wx.Dialog):
         '''An event it the program is ready to run slideshow'''
         self.button6.Disable()
         self.button7.Enable()
+        if (self.database['cleam-run']):
+            Cleaner()
+        SlideShow()
 
     def on_stop(self, event):
         '''An event it the program stop slideshow'''
