@@ -26,8 +26,7 @@ class SlideShow():
         app = win32com.client.Dispatch("PowerPoint.Application")
         app.Visible = True
         name = self.set_main_ppt_name("main-slide")
-        path = self.set_main_ppt_path(
-            os.path.dirname(os.path.abspath(__file__)))
+        path = self.set_main_ppt_path(self.database["path"])
         # create new and save ppt
         new_ppt = app.Presentations.Add()
         self.save_new_ppt(new_ppt, path, name)
@@ -35,11 +34,11 @@ class SlideShow():
         all_ppt = self.collect_local_ppt(
             self.database["path"], name)
         for _file in all_ppt:
-            path = os.path.join(path, _file)
-            temp_ppt = app.Presentations.Open(path)
+            file_path = os.path.join(path, _file)
+            temp_ppt = app.Presentations.Open(file_path)
             count = temp_ppt.Slides.Count
             temp_ppt.Close()
-            new_ppt.Slides.InsertFromFile(path, 0, 1, count)
+            new_ppt.Slides.InsertFromFile(file_path, 0, 1, count)
         # set animation for slideshow
         self.set_slide_animation(new_ppt)
         # save and slideshow ppt
@@ -50,7 +49,6 @@ class SlideShow():
     @staticmethod
     def set_main_ppt_name(text):
         '''Set filename for main ppt'''
-        text = text + ".pptx"
         return text
 
     @staticmethod
@@ -67,7 +65,8 @@ class SlideShow():
             _format = _file.split('.')[-1]
             if self.is_ppt_format(_format):
                 if self.not_main_file(name, main_filename):
-                    ppt_pool.append(_file)
+                    if self.not_temporary_file(name):
+                        ppt_pool.append(_file)
         return ppt_pool
 
     @staticmethod
@@ -79,9 +78,16 @@ class SlideShow():
     @staticmethod
     def not_main_file(filename, main_filename):
         '''filter main filename'''
-        if not filename.find(main_filename) != -1:
-            return True
-        return False
+        if filename.find(main_filename) != -1:
+            return False
+        return True
+
+    @staticmethod
+    def not_temporary_file(filename):
+        '''filter temporary deposit for file'''
+        if filename.find("~$") != -1:
+            return False
+        return True
 
     @staticmethod
     def is_ppt_format(file_format):

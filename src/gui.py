@@ -8,7 +8,7 @@ from slideshow import SlideShow
 
 class MainWindow(wx.Dialog):
     '''Render main window and control center'''
-    def __init__(self, parent, title):
+    def __init__(self, parent=None, title="電視牆輪播程式"):
         # super(MainWindow, self).__init__(parent, title=title)
         wx.Dialog.__init__(self, parent, title=title)
         self.database = self.fetch_data()
@@ -226,9 +226,13 @@ class MainWindow(wx.Dialog):
         '''An event it the program is ready to run slideshow'''
         self.button6.Disable()
         self.button7.Enable()
-        if (self.database['cleam-run']):
-            Cleaner()
-        SlideShow()
+        try:
+            if (self.database['clean-run']):
+                Cleaner()
+            SlideShow()
+        except:
+            self.button6.Enable()
+            self.button7.Disable()
 
     def on_stop(self, event):
         '''An event it the program stop slideshow'''

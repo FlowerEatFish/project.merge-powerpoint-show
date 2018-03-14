@@ -1,7 +1,8 @@
 '''Use for cleaning files'''
+import datetime
 import json
 import os
-import datetime
+import time
 
 
 class Cleaner():
@@ -25,13 +26,14 @@ class Cleaner():
 
     def set_file_list(self, path):
         '''Set value for file dict'''
-        ppt_path_pool = self.parser_local_ppt(path)
+        ppt_file_pool = self.parser_local_ppt(path)
         file_list = []
-        for path in ppt_path_pool:
+        for ppt_file in ppt_file_pool:
+            file_path = os.path.join(path, ppt_file)
             file_dict = {}
-            file_dict["path"] = path
-            file_dict["is_expired"] = self.is_expired(path)
-            file_dict["mtime"] = os.path.getmtime(path)
+            file_dict["path"] = file_path
+            file_dict["is_expired"] = self.is_expired(file_path)
+            file_dict["mtime"] = os.path.getmtime(file_path)
             file_list.append(file_dict)
         return file_list
 
@@ -49,7 +51,7 @@ class Cleaner():
     def get_now_time():
         '''Get now time from computer'''
         now_date = datetime.datetime.now()
-        now_time = int(now_date.strftime("%s"))
+        now_time = int(time.mktime(now_date.timetuple()))
         return now_time
 
     def run_cleaner(self, file_list):
@@ -110,7 +112,8 @@ class Cleaner():
         for _file in all_file:
             _format = _file.split('.')[-1]
             if self.is_ppt_format(_format):
-                ppt_path_pool.append("%s" % (_file))
+                if self.not_main_file(_file):
+                    ppt_path_pool.append("%s" % (_file))
         return ppt_path_pool
 
     @staticmethod
@@ -126,6 +129,14 @@ class Cleaner():
         if file_format.find(ppt_format) != -1:
             return True
         return False
+
+    @staticmethod
+    def not_main_file(filename):
+        '''filter main filename'''
+        main_filename = "main-slide"
+        if filename.find(main_filename) != -1:
+            return False
+        return True
 
 if __name__ == '__main__':
     Cleaner()
