@@ -10,6 +10,8 @@ from slideshow import SlideShow
 
 class MainWindow(wx.Dialog):
     '''Render main window and control center'''
+    thread_state = True
+
     def __init__(self, parent=None, title="電視牆輪播程式"):
         # super(MainWindow, self).__init__(parent, title=title)
         wx.Dialog.__init__(self, parent, title=title)
@@ -58,7 +60,8 @@ class MainWindow(wx.Dialog):
                    flag=wx.LEFT | wx.ALIGN_CENTER_VERTICAL, border=5)
         self.button2 = wx.Button(self, label="設置時間")
         self.button2.Bind(wx.EVT_BUTTON, self.on_set_start_time)
-        sizer1.Add(self.button2, pos=(2, 4), flag=wx.EXPAND | wx.RIGHT, border=5)
+        sizer1.Add(self.button2, pos=(2, 4),
+                   flag=wx.EXPAND | wx.RIGHT, border=5)
 
         # 播放設置區
         text5 = wx.StaticText(self, label="每隔幾秒後播放下一張投影片：")
@@ -69,7 +72,8 @@ class MainWindow(wx.Dialog):
                    flag=wx.LEFT | wx.ALIGN_CENTER_VERTICAL, border=5)
         self.button3 = wx.Button(self, label="設置時間")
         self.button3.Bind(wx.EVT_BUTTON, self.on_set_duration)
-        sizer1.Add(self.button3, pos=(3, 4), flag=wx.EXPAND | wx.RIGHT, border=5)
+        sizer1.Add(self.button3, pos=(3, 4),
+                   flag=wx.EXPAND | wx.RIGHT, border=5)
 
         # 其他選項區
         sb1 = wx.StaticBox(self, label="其他功能", style=wx.ALIGN_CENTER)
@@ -264,7 +268,6 @@ class MainWindow(wx.Dialog):
         '''Create a thread for activating stop button'''
         self.set_button_on_run()
         thread = threading.Thread(target=self.run_in_thread)
-        self.thread_state = True
         thread.start()
 
     def run_in_thread(self):
@@ -288,7 +291,7 @@ class MainWindow(wx.Dialog):
     def run_slide(self):
         '''Run slideshow by slideshow.py'''
         try:
-            if (self.database['clean-run']):
+            if self.database['clean-run']:
                 Cleaner()
             SlideShow()
         except:

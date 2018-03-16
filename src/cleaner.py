@@ -60,13 +60,9 @@ class Cleaner():
         not_expired_num = self.get_not_expired_number(file_list)
         total_num = len(file_list)
         if not_expired_num > keep_num:
-            print("Run del_expired_file method.")
             self.del_expired_file(file_list)
         elif total_num > keep_num:
-            print("Run del_excess_file method.")
             self.del_excess_file(file_list)
-        else:
-            print("No cleaner is needed.")
 
     @staticmethod
     def get_not_expired_number(file_list):

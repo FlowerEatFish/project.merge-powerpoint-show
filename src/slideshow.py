@@ -1,10 +1,9 @@
 '''Use for TV wall'''
 import json
 import os
-import pythoncom
 import threading
 import time
-import sys
+import pythoncom
 import win32com.client
 
 
@@ -30,9 +29,11 @@ class SlideShow():
         # Get instance
         app = win32com.client.Dispatch("PowerPoint.Application")
         # Create id
-        ppt_id = pythoncom.CoMarshalInterThreadInterfaceInStream(pythoncom.IID_IDispatch, app)
+        ppt_id = pythoncom.CoMarshalInterThreadInterfaceInStream(
+            pythoncom.IID_IDispatch, app)
         # Pass the id to the new thread
-        thread = threading.Thread(target=self.run_in_thread, kwargs={'ppt_id': ppt_id})
+        thread = threading.Thread(target=self.run_in_thread,
+                                  kwargs={'ppt_id': ppt_id})
         thread.start()
         # Wait for child to finish
         thread.join()
@@ -59,12 +60,15 @@ class SlideShow():
         self.run_slideshow(
             new_ppt, duration=self.database["duration"])
 
-    def run_in_thread(self, ppt_id):
+    @staticmethod
+    def run_in_thread(ppt_id):
+        '''Using as debug for running by gui.py'''
         # Initialize
         pythoncom.CoInitialize()
         # Get instance from the id
-        ppt = win32com.client.Dispatch(
-            pythoncom.CoGetInterfaceAndReleaseStream(ppt_id, pythoncom.IID_IDispatch)
+        win32com.client.Dispatch(
+            pythoncom.CoGetInterfaceAndReleaseStream(ppt_id,
+                                                     pythoncom.IID_IDispatch)
         )
         time.sleep(2)
 
