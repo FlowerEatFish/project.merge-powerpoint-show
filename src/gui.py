@@ -1,6 +1,8 @@
 '''Construction of UI and events'''
 import json
 import os
+import threading
+import time
 import wx
 from cleaner import Cleaner
 from slideshow import SlideShow
@@ -15,6 +17,8 @@ class MainWindow(wx.Dialog):
         self.initial_ui(self.database)
         self.Centre()
         self.Show()
+        if self.is_autorun():
+            self.start_to_run_thread()
 
     @staticmethod
     def fetch_data():
@@ -40,9 +44,10 @@ class MainWindow(wx.Dialog):
         self.text2 = wx.StaticText(self, label=database['path'])
         sizer1.Add(self.text2, pos=(1, 1), span=(1, 3),
                    flag=wx.LEFT | wx.ALIGN_CENTER_VERTICAL, border=5)
-        button1 = wx.Button(self, label="設置路徑")
-        button1.Bind(wx.EVT_BUTTON, self.on_select_dir)
-        sizer1.Add(button1, pos=(1, 4), flag=wx.EXPAND | wx.RIGHT, border=5)
+        self.button1 = wx.Button(self, label="設置路徑")
+        self.button1.Bind(wx.EVT_BUTTON, self.on_select_dir)
+        sizer1.Add(self.button1, pos=(1, 4),
+                   flag=wx.EXPAND | wx.RIGHT, border=5)
 
         # 運行設置區
         text3 = wx.StaticText(self, label="幾秒後開始運行程式：")
@@ -51,9 +56,9 @@ class MainWindow(wx.Dialog):
         self.text4 = wx.StaticText(self, label=str(database['start-time']))
         sizer1.Add(self.text4, pos=(2, 2), span=(1, 2),
                    flag=wx.LEFT | wx.ALIGN_CENTER_VERTICAL, border=5)
-        button2 = wx.Button(self, label="設置時間")
-        button2.Bind(wx.EVT_BUTTON, self.on_set_start_time)
-        sizer1.Add(button2, pos=(2, 4), flag=wx.EXPAND | wx.RIGHT, border=5)
+        self.button2 = wx.Button(self, label="設置時間")
+        self.button2.Bind(wx.EVT_BUTTON, self.on_set_start_time)
+        sizer1.Add(self.button2, pos=(2, 4), flag=wx.EXPAND | wx.RIGHT, border=5)
 
         # 播放設置區
         text5 = wx.StaticText(self, label="每隔幾秒後播放下一張投影片：")
@@ -62,9 +67,9 @@ class MainWindow(wx.Dialog):
         self.text6 = wx.StaticText(self, label=str(database['duration']))
         sizer1.Add(self.text6, pos=(3, 2), span=(1, 2),
                    flag=wx.LEFT | wx.ALIGN_CENTER_VERTICAL, border=5)
-        button3 = wx.Button(self, label="設置時間")
-        button3.Bind(wx.EVT_BUTTON, self.on_set_duration)
-        sizer1.Add(button3, pos=(3, 4), flag=wx.EXPAND | wx.RIGHT, border=5)
+        self.button3 = wx.Button(self, label="設置時間")
+        self.button3.Bind(wx.EVT_BUTTON, self.on_set_duration)
+        sizer1.Add(self.button3, pos=(3, 4), flag=wx.EXPAND | wx.RIGHT, border=5)
 
         # 其他選項區
         sb1 = wx.StaticBox(self, label="其他功能", style=wx.ALIGN_CENTER)
@@ -76,11 +81,11 @@ class MainWindow(wx.Dialog):
         checkbox1.Bind(wx.EVT_CHECKBOX, self.autorun_on_checked)
         boxsizer1.Add(checkbox1, flag=wx.LEFT, border=5)
 
-        checkbox2 = wx.CheckBox(self, label="啟用清理功能。（播放投影片前，先清理過期的檔案。）")
+        self.checkbox2 = wx.CheckBox(self, label="啟用清理功能。（播放投影片前，先清理過期的檔案。）")
         if database['clean-run']:
-            checkbox2.SetValue(True)
-        checkbox2.Bind(wx.EVT_CHECKBOX, self.clean_on_checked)
-        boxsizer1.Add(checkbox2, flag=wx.LEFT, border=5)
+            self.checkbox2.SetValue(True)
+        self.checkbox2.Bind(wx.EVT_CHECKBOX, self.clean_on_checked)
+        boxsizer1.Add(self.checkbox2, flag=wx.LEFT, border=5)
 
         sizer1.Add(boxsizer1, pos=(4, 0), span=(1, 5),
                    flag=wx.EXPAND | wx.TOP | wx.LEFT | wx.RIGHT, border=5)
@@ -139,6 +144,12 @@ class MainWindow(wx.Dialog):
 
         sizer1.Fit(self)
         self.SetSizer(sizer1)
+
+    def is_autorun(self):
+        '''Return bool for autorun'''
+        if self.database['auto-run']:
+            return True
+        return False
 
     def on_select_dir(self, event):
         '''An event for setting directory of loading PowerPoints'''
@@ -224,20 +235,68 @@ class MainWindow(wx.Dialog):
 
     def on_run(self, event):
         '''An event it the program is ready to run slideshow'''
+        self.start_to_run_thread()
+
+    def set_button_on_run(self):
+        '''Set the states of buttons when program is running'''
+        self.button1.Disable()
+        self.button2.Disable()
+        self.button3.Disable()
+        self.checkbox2.Disable()
+        self.button4.Disable()
+        self.button5.Disable()
         self.button6.Disable()
         self.button7.Enable()
+
+    def set_button_on_stop(self):
+        '''Set the states of buttons when program stop'''
+        self.button1.Enable()
+        self.button2.Enable()
+        self.button3.Enable()
+        self.checkbox2.Enable()
+        if self.database['clean-run']:
+            self.button4.Enable()
+            self.button5.Enable()
+        self.button6.Enable()
+        self.button7.Disable()
+
+    def start_to_run_thread(self):
+        '''Create a thread for activating stop button'''
+        self.set_button_on_run()
+        thread = threading.Thread(target=self.run_in_thread)
+        self.thread_state = True
+        thread.start()
+
+    def run_in_thread(self):
+        '''A flow during running'''
+        run_on_once = True
+        count = self.database['start-time']
+        while self.thread_state:
+            if count > 0:
+                self.button6.Label = "%s %s" % (str(count), "秒後開始")
+                count = count - 1
+                time.sleep(1)
+            else:
+                self.button6.Label = "運行中"
+                if run_on_once:
+                    thread = threading.Thread(target=self.run_slide)
+                    thread.start()
+                    run_on_once = False
+        self.button6.Label = "開始運行"
+        self.set_button_on_stop()
+
+    def run_slide(self):
+        '''Run slideshow by slideshow.py'''
         try:
             if (self.database['clean-run']):
                 Cleaner()
             SlideShow()
         except:
-            self.button6.Enable()
-            self.button7.Disable()
+            self.thread_state = False
 
     def on_stop(self, event):
         '''An event it the program stop slideshow'''
-        self.button6.Enable()
-        self.button7.Disable()
+        self.thread_state = False
 
     def update_and_save_database(self):
         '''Save config data to external file config.json'''

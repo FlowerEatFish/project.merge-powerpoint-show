@@ -1,6 +1,8 @@
 '''Use for TV wall'''
 import json
 import os
+import pythoncom
+import threading
 import time
 import sys
 import win32com.client
@@ -23,7 +25,18 @@ class SlideShow():
 
     def run_ppt_app(self):
         '''main script'''
+        # Initialize
+        pythoncom.CoInitialize()
+        # Get instance
         app = win32com.client.Dispatch("PowerPoint.Application")
+        # Create id
+        ppt_id = pythoncom.CoMarshalInterThreadInterfaceInStream(pythoncom.IID_IDispatch, app)
+        # Pass the id to the new thread
+        thread = threading.Thread(target=self.run_in_thread, kwargs={'ppt_id': ppt_id})
+        thread.start()
+        # Wait for child to finish
+        thread.join()
+
         app.Visible = True
         name = self.set_main_ppt_name("main-slide")
         path = self.set_main_ppt_path(self.database["path"])
@@ -45,6 +58,15 @@ class SlideShow():
         self.save_new_ppt(new_ppt, path, name)
         self.run_slideshow(
             new_ppt, duration=self.database["duration"])
+
+    def run_in_thread(self, ppt_id):
+        # Initialize
+        pythoncom.CoInitialize()
+        # Get instance from the id
+        ppt = win32com.client.Dispatch(
+            pythoncom.CoGetInterfaceAndReleaseStream(ppt_id, pythoncom.IID_IDispatch)
+        )
+        time.sleep(2)
 
     @staticmethod
     def set_main_ppt_name(text):
