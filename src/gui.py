@@ -8,13 +8,14 @@ from cleaner import Cleaner
 from slideshow import SlideShow
 
 
-class MainWindow(wx.Dialog):
+class MainWindow(wx.Frame):
     '''Render main window and control center'''
     thread_state = True
 
     def __init__(self, parent=None, title="電視牆輪播程式"):
         # super(MainWindow, self).__init__(parent, title=title)
-        wx.Dialog.__init__(self, parent, title=title)
+        wx.Frame.__init__(self, parent, title=title,
+                          style=wx.SYSTEM_MENU | wx.CAPTION | wx.CLOSE_BOX)
         self.database = self.fetch_data()
         self.initial_ui(self.database)
         self.Centre()
