@@ -45,7 +45,7 @@ class MainWindow(wx.Frame):
         '''Render all UI and events such as buttons, texts, etc'''
         self.SetBackgroundColour(
             wx.SystemSettings.GetColour(wx.SYS_COLOUR_3DLIGHT))
-        sizer1 = wx.GridBagSizer(5, 5)
+        sizer1 = wx.GridBagSizer(5, 6)
 
         line = wx.StaticLine(self)
         sizer1.Add(line, pos=(0, 0), span=(1, 5),
@@ -55,36 +55,37 @@ class MainWindow(wx.Frame):
         text1 = wx.StaticText(self, label="資料夾路徑：")
         sizer1.Add(text1, pos=(1, 0), span=(1, 1),
                    flag=wx.LEFT | wx.ALIGN_CENTER_VERTICAL, border=5)
-        self.text2 = wx.StaticText(self, label=database['path'])
-        sizer1.Add(self.text2, pos=(1, 1), span=(1, 3),
-                   flag=wx.LEFT | wx.ALIGN_CENTER_VERTICAL, border=5)
         self.button1 = wx.Button(self, label="設置路徑")
         self.button1.Bind(wx.EVT_BUTTON, self.on_select_dir)
         sizer1.Add(self.button1, pos=(1, 4),
                    flag=wx.EXPAND | wx.RIGHT, border=5)
+        
+        self.text2 = wx.StaticText(self, label=database['path'])
+        sizer1.Add(self.text2, pos=(2, 0), span=(1, 4),
+                   flag=wx.LEFT | wx.ALIGN_CENTER_VERTICAL, border=5)
 
         # 運行設置區
         text3 = wx.StaticText(self, label="幾秒後開始運行程式：")
-        sizer1.Add(text3, pos=(2, 0), span=(1, 2),
+        sizer1.Add(text3, pos=(3, 0), span=(1, 2),
                    flag=wx.LEFT | wx.ALIGN_CENTER_VERTICAL, border=5)
         self.text4 = wx.StaticText(self, label=str(database['start-time']))
-        sizer1.Add(self.text4, pos=(2, 2), span=(1, 2),
+        sizer1.Add(self.text4, pos=(3, 2), span=(1, 2),
                    flag=wx.LEFT | wx.ALIGN_CENTER_VERTICAL, border=5)
         self.button2 = wx.Button(self, label="設置時間")
         self.button2.Bind(wx.EVT_BUTTON, self.on_set_start_time)
-        sizer1.Add(self.button2, pos=(2, 4),
+        sizer1.Add(self.button2, pos=(3, 4),
                    flag=wx.EXPAND | wx.RIGHT, border=5)
 
         # 播放設置區
         text5 = wx.StaticText(self, label="每隔幾秒後播放下一張投影片：")
-        sizer1.Add(text5, pos=(3, 0), span=(1, 2),
+        sizer1.Add(text5, pos=(4, 0), span=(1, 2),
                    flag=wx.LEFT | wx.ALIGN_CENTER_VERTICAL, border=5)
         self.text6 = wx.StaticText(self, label=str(database['duration']))
-        sizer1.Add(self.text6, pos=(3, 2), span=(1, 2),
+        sizer1.Add(self.text6, pos=(4, 2), span=(1, 2),
                    flag=wx.LEFT | wx.ALIGN_CENTER_VERTICAL, border=5)
         self.button3 = wx.Button(self, label="設置時間")
         self.button3.Bind(wx.EVT_BUTTON, self.on_set_duration)
-        sizer1.Add(self.button3, pos=(3, 4),
+        sizer1.Add(self.button3, pos=(4, 4),
                    flag=wx.EXPAND | wx.RIGHT, border=5)
 
         # 其他選項區
@@ -103,7 +104,7 @@ class MainWindow(wx.Frame):
         self.checkbox2.Bind(wx.EVT_CHECKBOX, self.clean_on_checked)
         boxsizer1.Add(self.checkbox2, flag=wx.LEFT, border=5)
 
-        sizer1.Add(boxsizer1, pos=(4, 0), span=(1, 5),
+        sizer1.Add(boxsizer1, pos=(5, 0), span=(1, 5),
                    flag=wx.EXPAND | wx.TOP | wx.LEFT | wx.RIGHT, border=5)
 
         # 清理選項區
@@ -142,21 +143,21 @@ class MainWindow(wx.Frame):
         sizer2.Add(self.button5, pos=(1, 4),
                    flag=wx.EXPAND | wx.BOTTOM, border=5)
 
-        sizer1.Add(boxsizer2, pos=(5, 0), span=(1, 5),
+        sizer1.Add(boxsizer2, pos=(6, 0), span=(1, 5),
                    flag=wx.EXPAND | wx.TOP | wx.LEFT | wx.RIGHT, border=5)
 
         self.button6 = wx.Button(self, label="開始運行")
-        sizer1.Add(self.button6, pos=(6, 0), flag=wx.ALL | wx.EXPAND, border=5)
+        sizer1.Add(self.button6, pos=(7, 0), flag=wx.ALL | wx.EXPAND, border=5)
         self.button6.Bind(wx.EVT_BUTTON, self.on_run)
 
         self.button7 = wx.Button(self, label="停止運行")
-        sizer1.Add(self.button7, pos=(6, 1), flag=wx.ALL | wx.EXPAND, border=5)
+        sizer1.Add(self.button7, pos=(7, 1), flag=wx.ALL | wx.EXPAND, border=5)
         self.button7.Disable()
         self.button7.Bind(wx.EVT_BUTTON, self.on_stop)
 
         button8 = wx.Button(self, label="關閉程式")
         button8.Bind(wx.EVT_BUTTON, self.on_quit)
-        sizer1.Add(button8, pos=(6, 4), flag=wx.ALL | wx.EXPAND, border=5)
+        sizer1.Add(button8, pos=(7, 4), flag=wx.ALL | wx.EXPAND, border=5)
 
         sizer1.Fit(self)
         self.SetSizer(sizer1)
