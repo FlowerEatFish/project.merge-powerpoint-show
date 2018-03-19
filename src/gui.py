@@ -182,48 +182,94 @@ class MainWindow(wx.Frame):
 
     def on_set_start_time(self, event):
         '''An event for setting delay before run sldieshow'''
+        min_range = 5
+        max_range = 3600
         dlg = SettingWindow(self, title="幾秒後開始運行程式",
-                            min_range=5, max_range=600, unit="秒")
+                            min_range=min_range, max_range=max_range, unit="秒")
         setting = dlg.ShowModal()
         if setting == wx.ID_OK:
-            self.database['start-time'] = int(dlg.textctrl1.GetValue())
-            self.text4.Label = str(self.database['start-time'])
-            self.update_and_save_database()
+            value = dlg.textctrl1.GetValue()
+            if self.num_is_valid(value=value, min_range=min_range,
+                                 max_range=max_range):
+                self.database['start-time'] = int(dlg.textctrl1.GetValue())
+                self.text4.Label = str(self.database['start-time'])
+                self.update_and_save_database()
         dlg.Destroy()
 
     def on_set_duration(self, event):
         '''An event for setting duration of sldieshow'''
+        min_range = 5
+        max_range = 3600
         dlg = SettingWindow(self, title="每隔幾秒後播放下一張投影片",
-                            min_range=5, max_range=600, unit="秒")
+                            min_range=min_range, max_range=max_range, unit="秒")
         setting = dlg.ShowModal()
         if setting == wx.ID_OK:
-            self.database['duration'] = int(dlg.textctrl1.GetValue())
-            self.text6.Label = str(self.database['duration'])
-            self.update_and_save_database()
+            value = dlg.textctrl1.GetValue()
+            if self.num_is_valid(value=value, min_range=min_range,
+                                 max_range=max_range):
+                int(dlg.textctrl1.GetValue())
+                self.database['duration'] = int(dlg.textctrl1.GetValue())
+                self.text6.Label = str(self.database['duration'])
+                self.update_and_save_database()
         dlg.Destroy()
 
     def on_set_expiration_date(self, event):
         '''An event for setting when will files be deleted after thry are
            created'''
+        min_range = 1
+        max_range = 365
         dlg = SettingWindow(self, title="刪除超過幾天的檔案",
-                            min_range=1, max_range=180, unit="天")
+                            min_range=min_range, max_range=max_range, unit="天")
         setting = dlg.ShowModal()
         if setting == wx.ID_OK:
-            self.database['expiration-date'] = int(dlg.textctrl1.GetValue())
-            self.text8.Label = str(self.database['expiration-date'])
-            self.update_and_save_database()
+            value = dlg.textctrl1.GetValue()
+            if self.num_is_valid(value=value, min_range=min_range,
+                                 max_range=max_range):
+                self.database['expiration-date'] = int(value)
+                self.text8.Label = str(self.database['expiration-date'])
+                self.update_and_save_database()
         dlg.Destroy()
 
     def on_set_amount_of_keep_file(self, event):
         '''An event for setting how many files to keep'''
+        min_range = 0
+        max_range = 100
         dlg = SettingWindow(self, title="保留幾個最近建立的檔案",
-                            min_range=0, max_range=100, unit="個")
+                            min_range=min_range, max_range=max_range, unit="個")
         setting = dlg.ShowModal()
         if setting == wx.ID_OK:
-            self.database['keep-file'] = int(dlg.textctrl1.GetValue())
-            self.text10.Label = str(self.database['keep-file'])
-            self.update_and_save_database()
+            value = dlg.textctrl1.GetValue()
+            if self.num_is_valid(value=value, min_range=min_range,
+                                 max_range=max_range):
+                self.database['keep-file'] = int(value)
+                self.text10.Label = str(self.database['keep-file'])
+                self.update_and_save_database()
         dlg.Destroy()
+
+    def num_is_valid(self, value, min_range, max_range):
+        '''Check whether the value user entered is valid'''
+        if not self.is_int(value):
+            self.warn_dialog("無效數字")
+            return False
+        if min_range > int(value):
+            self.warn_dialog("數字過小")
+            return False
+        if max_range < int(value):
+            self.warn_dialog("數字過大")
+            return False
+        return True
+
+    def is_int(self, value):
+        '''Use exception method to check whether value is int'''
+        try:
+            int(value)
+            return True
+        except:
+            return False
+
+    def warn_dialog(self, text):
+        wx.MessageBox(text,
+                      '錯誤', wx.OK | wx.ICON_ERROR)
 
     def autorun_on_checked(self, event):
         '''An event for setting whether the program immediately run
