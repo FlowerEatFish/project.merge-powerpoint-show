@@ -16,6 +16,7 @@ class MainWindow(wx.Frame):
         # super(MainWindow, self).__init__(parent, title=title)
         wx.Frame.__init__(self, parent, title=title,
                           style=wx.SYSTEM_MENU | wx.CAPTION | wx.CLOSE_BOX)
+        self.set_icon()
         self.database = self.fetch_data()
         self.initial_ui(self.database)
         self.Centre()
@@ -32,8 +33,19 @@ class MainWindow(wx.Frame):
         result = json.load(open(database_path))
         return result
 
+    def set_icon(self):
+        '''Set icon for GUI'''
+        icon_path = os.path.dirname(os.path.abspath(__file__))
+        icon_name = "icon.ico"
+        path = os.path.join(icon_path, icon_name)
+        icon = wx.EmptyIcon()
+        icon.CopyFromBitmap(wx.Bitmap(path, wx.BITMAP_TYPE_ANY))
+        self.SetIcon(icon)
+
     def initial_ui(self, database):
         '''Render all UI and events such as buttons, texts, etc'''
+        self.SetBackgroundColour(
+            wx.SystemSettings.GetColour(wx.SYS_COLOUR_3DLIGHT))
         sizer1 = wx.GridBagSizer(5, 5)
 
         line = wx.StaticLine(self)
