@@ -38,8 +38,7 @@ class MainWindow(wx.Frame):
         icon_path = os.path.dirname(os.path.abspath(__file__))
         icon_name = "icon.ico"
         path = os.path.join(icon_path, icon_name)
-        icon = wx.EmptyIcon()
-        icon.CopyFromBitmap(wx.Bitmap(path, wx.BITMAP_TYPE_ANY))
+        icon = wx.Icon(path, wx.BITMAP_TYPE_ICO)
         self.SetIcon(icon)
 
     def initial_ui(self, database):
@@ -333,6 +332,7 @@ class MainWindow(wx.Frame):
         '''A flow during running'''
         run_on_once = True
         count = self.database['start-time']
+        self.thread_state = True
         while self.thread_state:
             if count > 0:
                 self.button6.Label = "%s %s" % (str(count), "秒後開始")
