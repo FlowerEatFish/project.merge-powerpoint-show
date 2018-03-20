@@ -4,6 +4,7 @@ import os
 import threading
 import time
 import pythoncom
+import wx
 import win32com.client
 
 
@@ -39,6 +40,10 @@ class SlideShow():
         thread.join()
 
         app.Visible = True
+        self.start_app(app)
+
+    def start_app(self, app):
+        '''set exception for showing error to user'''
         name = self.set_main_ppt_name("main-slide")
         path = self.set_main_ppt_path(self.database["path"])
         # create new and save ppt
@@ -47,18 +52,30 @@ class SlideShow():
         # add slides from other ppt into main ppt
         all_ppt = self.collect_local_ppt(
             self.database["path"], name)
-        for _file in all_ppt:
-            file_path = os.path.join(path, _file)
-            temp_ppt = app.Presentations.Open(file_path)
-            count = temp_ppt.Slides.Count
-            temp_ppt.Close()
-            new_ppt.Slides.InsertFromFile(file_path, 0, 1, count)
-        # set animation for slideshow
-        self.set_slide_animation(new_ppt)
-        # save and slideshow ppt
-        self.save_new_ppt(new_ppt, path, name)
-        self.run_slideshow(
-            new_ppt, duration=self.database["duration"])
+        if len(all_ppt) > 0:
+            # check whether total slide is not zero
+            total_slide_count = 0
+            for _file in all_ppt:
+                file_path = os.path.join(path, _file)
+                temp_ppt = app.Presentations.Open(file_path)
+                count = temp_ppt.Slides.Count
+                temp_ppt.Close()
+                if count > 0:
+                    total_slide_count = total_slide_count + count
+                    new_ppt.Slides.InsertFromFile(
+                        file_path, 0, 1, count)
+            # set animation for slideshow
+            self.set_slide_animation(new_ppt)
+            # save and slideshow ppt
+            self.save_new_ppt(new_ppt, path, name)
+            if total_slide_count > 0:
+                self.run_slideshow(
+                    new_ppt, duration=self.database["duration"])
+            else:
+                SlideWarn(text="沒有投影片可以播放。")
+        else:
+            SlideWarn(text="目標資料夾沒有 PowerPoint 檔案。")
+            
 
     @staticmethod
     def run_in_thread(ppt_id):
@@ -138,12 +155,15 @@ class SlideShow():
     @staticmethod
     def loop_slideshow(app, duration):
         '''slideshow. note: this statement is loop'''
-        max_slide = app.Slides.Count
-        period = duration
-        while True:
-            for index in range(max_slide):
-                app.SlideShowWindow.View.GotoSlide(index+1)
-                time.sleep(period)
+        try:
+            max_slide = app.Slides.Count
+            period = duration
+            while True:
+                for index in range(max_slide):
+                    app.SlideShowWindow.View.GotoSlide(index+1)
+                    time.sleep(period)
+        except:
+            SlideWarn(text="使用者已自行中斷輪播運作。")
 
     def save_new_ppt(self, app, path, name):
         '''save a ppt as main'''
@@ -156,6 +176,18 @@ class SlideShow():
         '''check and remove old same ppt'''
         if os.path.isfile(full_path):
             os.remove(full_path)
+
+
+class SlideWarn():
+    '''If an error is cause, show the message to user'''
+
+    def __init__(self, text="錯誤"):
+        '''Mian control center'''
+        self.warn_dialog(text)
+
+    def warn_dialog(self, text):
+        '''GUI of errir show to user'''
+        wx.MessageBox(text, "錯誤", wx.OK | wx.ICON_ERROR)
 
 if __name__ == '__main__':
     SlideShow()

@@ -278,8 +278,7 @@ class MainWindow(wx.Frame):
             return False
 
     def warn_dialog(self, text):
-        wx.MessageBox(text,
-                      '錯誤', wx.OK | wx.ICON_ERROR)
+        wx.MessageBox(text, '錯誤', wx.OK | wx.ICON_ERROR)
 
     def autorun_on_checked(self, event):
         '''An event for setting whether the program immediately run
@@ -365,6 +364,8 @@ class MainWindow(wx.Frame):
                 Cleaner()
             SlideShow()
         except:
+            self.warn_dialog(text="請先關閉 PowerPoint 再運行程式。")
+        finally:
             self.thread_state = False
 
     def on_stop(self, event):
