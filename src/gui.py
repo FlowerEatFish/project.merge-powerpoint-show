@@ -160,7 +160,7 @@ class MainWindow(wx.Frame):
         sizer1.Add(button8, pos=(7, 4), flag=wx.ALL | wx.EXPAND, border=5)
 
         text10 = wx.StaticText(
-            self, label="[ Repositoy ] https://github.com/FlowerEatFish/project.merge-powerpoint-show")
+            self, label="[ Repositoy ] https://github.com/FlowerEatFish/project.tv-wall")
         sizer1.Add(text10, pos=(8, 0), span=(1, 4),
                    flag=wx.ALIGN_LEFT | wx.ALL, border=5)
 
