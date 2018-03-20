@@ -45,7 +45,7 @@ class MainWindow(wx.Frame):
         '''Render all UI and events such as buttons, texts, etc'''
         self.SetBackgroundColour(
             wx.SystemSettings.GetColour(wx.SYS_COLOUR_3DLIGHT))
-        sizer1 = wx.GridBagSizer(5, 6)
+        sizer1 = wx.GridBagSizer(5, 7)
 
         line = wx.StaticLine(self)
         sizer1.Add(line, pos=(0, 0), span=(1, 5),
@@ -158,6 +158,16 @@ class MainWindow(wx.Frame):
         button8 = wx.Button(self, label="關閉程式")
         button8.Bind(wx.EVT_BUTTON, self.on_quit)
         sizer1.Add(button8, pos=(7, 4), flag=wx.ALL | wx.EXPAND, border=5)
+
+        text10 = wx.StaticText(
+            self, label="[ Repositoy ] https://github.com/FlowerEatFish/project.merge-powerpoint-show")
+        sizer1.Add(text10, pos=(8, 0), span=(1, 4),
+                   flag=wx.ALIGN_LEFT | wx.ALL, border=5)
+
+        text11 = wx.StaticText(
+            self, label="[ Version ] 1.0")
+        sizer1.Add(text11, pos=(8, 4), span=(1, 1),
+                   flag=wx.ALIGN_RIGHT | wx.ALL, border=5)
 
         sizer1.Fit(self)
         self.SetSizer(sizer1)
