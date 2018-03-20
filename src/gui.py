@@ -15,7 +15,7 @@ class MainWindow(wx.Frame):
     def __init__(self, parent=None, title="電視牆輪播程式"):
         # super(MainWindow, self).__init__(parent, title=title)
         wx.Frame.__init__(self, parent, title=title,
-                          style=wx.SYSTEM_MENU | wx.CAPTION | wx.CLOSE_BOX)
+                          style=wx.SYSTEM_MENU | wx.CAPTION | wx.MINIMIZE_BOX | wx.CLOSE_BOX)
         self.set_icon()
         self.database = self.fetch_data()
         self.initial_ui(self.database)
