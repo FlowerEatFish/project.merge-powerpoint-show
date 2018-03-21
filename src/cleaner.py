@@ -121,9 +121,10 @@ class Cleaner():
     @staticmethod
     def is_ppt_format(file_format):
         '''Filter PowerPoint files'''
-        ppt_format = 'ppt'
-        if file_format.find(ppt_format) != -1:
-            return True
+        ppt_format = ['ppt', 'odp']
+        for i in ppt_format:
+            if file_format.find(i) != -1:
+                return True
         return False
 
     @staticmethod
