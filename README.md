@@ -75,8 +75,15 @@
 
 解決：輸入半形數字、正整數，不含小數點、符號、以及其他非數字的字符。
 
+***
+
 [error-1]: https://raw.githubusercontent.com/FlowerEatFish/project.tv-wall/master/public/image/error-1.png
 [error-2]: https://raw.githubusercontent.com/FlowerEatFish/project.tv-wall/master/public/image/error-2.png
 [error-3]: https://raw.githubusercontent.com/FlowerEatFish/project.tv-wall/master/public/image/error-3.png
 [error-4]: https://raw.githubusercontent.com/FlowerEatFish/project.tv-wall/master/public/image/error-4.png
 [error-5]: https://raw.githubusercontent.com/FlowerEatFish/project.tv-wall/master/public/image/error-5.png
+
+## 未來計劃：
+
+- [ ] 取代刪除功能，將過期檔案移動（含覆寫）至另一資料夾。
+- [ ] 設置釋放版本的歷史紀錄。
