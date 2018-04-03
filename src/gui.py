@@ -345,9 +345,9 @@ class MainWindow(wx.Frame):
         self.thread_state = True
         while self.thread_state:
             if count > 0:
-                self.button6.Label = "%s %s" % (str(count), "秒後開始")
-                count = count - 1
-                time.sleep(1)
+                self.button6.Label = "%s %s" % (str(int(count)), "秒後開始")
+                count = count - 0.2
+                time.sleep(0.2)
             else:
                 self.button6.Label = "運行中"
                 if run_on_once:
