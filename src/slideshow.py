@@ -49,10 +49,10 @@ class SlideShow():
         # set path and name for creating temp and main ppt
         py_path = os.path.dirname(os.path.abspath(__file__))
         temp_file_path = os.path.join(py_path, 'temp')
-        name = self.set_main_ppt_name("main-slide")
+        name = self.set_main_ppt_name("main")
         # create new and save ppt
         new_ppt = app.Presentations.Add()
-        self.save_new_ppt(new_ppt, path, name)
+        self.save_new_ppt(new_ppt, py_path, name)
         # add slides from other ppt into main ppt
         all_ppt = self.collect_local_ppt(
             self.database["path"], name)
@@ -73,7 +73,7 @@ class SlideShow():
             # set animation for slideshow
             self.set_slide_animation(new_ppt)
             # save and slideshow ppt
-            self.save_new_ppt(new_ppt, path, name)
+            self.save_new_ppt(new_ppt, py_path, name)
             if total_slide_count > 0:
                 self.run_slideshow(
                     new_ppt, duration=self.database["duration"])
