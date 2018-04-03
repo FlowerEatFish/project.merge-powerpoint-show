@@ -3,7 +3,10 @@ import json
 import os
 import threading
 import time
+
 import wx
+
+import fetch
 from cleaner import Cleaner
 from slideshow import SlideShow
 
@@ -17,21 +20,12 @@ class MainWindow(wx.Frame):
         wx.Frame.__init__(self, parent, title=title,
                           style=wx.SYSTEM_MENU | wx.CAPTION | wx.MINIMIZE_BOX | wx.CLOSE_BOX)
         self.set_icon()
-        self.database = self.fetch_data()
+        self.database = fetch.fetch_data()
         self.initial_ui(self.database)
         self.Centre()
         self.Show()
         if self.is_autorun():
             self.start_to_run_thread()
-
-    @staticmethod
-    def fetch_data():
-        '''Load config data from external file config.json'''
-        local_directory = os.path.dirname(os.path.abspath(__file__))
-        database_name = "config.json"
-        database_path = os.path.join(local_directory, database_name)
-        result = json.load(open(database_path))
-        return result
 
     def set_icon(self):
         '''Set icon for GUI'''
@@ -59,7 +53,7 @@ class MainWindow(wx.Frame):
         self.button1.Bind(wx.EVT_BUTTON, self.on_select_dir)
         sizer1.Add(self.button1, pos=(1, 4),
                    flag=wx.EXPAND | wx.RIGHT, border=5)
-        
+
         self.text2 = wx.StaticText(self, label=database['path'])
         sizer1.Add(self.text2, pos=(2, 0), span=(1, 4),
                    flag=wx.LEFT | wx.ALIGN_CENTER_VERTICAL, border=5)
@@ -186,7 +180,7 @@ class MainWindow(wx.Frame):
             filepath = dlg.GetPath()
             self.database['path'] = filepath
             self.text2.Label = self.database['path']
-            self.update_and_save_database()
+            fetch.update_and_save_database(self.database)
         else:
             return
 
@@ -203,7 +197,7 @@ class MainWindow(wx.Frame):
                                  max_range=max_range):
                 self.database['start-time'] = int(dlg.textctrl1.GetValue())
                 self.text4.Label = str(self.database['start-time'])
-                self.update_and_save_database()
+                fetch.update_and_save_database(self.database)
         dlg.Destroy()
 
     def on_set_duration(self, event):
@@ -220,7 +214,7 @@ class MainWindow(wx.Frame):
                 int(dlg.textctrl1.GetValue())
                 self.database['duration'] = int(dlg.textctrl1.GetValue())
                 self.text6.Label = str(self.database['duration'])
-                self.update_and_save_database()
+                fetch.update_and_save_database(self.database)
         dlg.Destroy()
 
     def on_set_expiration_date(self, event):
@@ -237,7 +231,7 @@ class MainWindow(wx.Frame):
                                  max_range=max_range):
                 self.database['expiration-date'] = int(value)
                 self.text8.Label = str(self.database['expiration-date'])
-                self.update_and_save_database()
+                fetch.update_and_save_database(self.database)
         dlg.Destroy()
 
     def on_set_amount_of_keep_file(self, event):
@@ -253,7 +247,7 @@ class MainWindow(wx.Frame):
                                  max_range=max_range):
                 self.database['keep-file'] = int(value)
                 self.text10.Label = str(self.database['keep-file'])
-                self.update_and_save_database()
+                fetch.update_and_save_database(self.database)
         dlg.Destroy()
 
     def num_is_valid(self, value, min_range, max_range):
@@ -277,7 +271,9 @@ class MainWindow(wx.Frame):
         except:
             return False
 
-    def warn_dialog(self, text):
+    @staticmethod
+    def warn_dialog(text):
+        '''Show an error message'''
         wx.MessageBox(text, '錯誤', wx.OK | wx.ICON_ERROR)
 
     def autorun_on_checked(self, event):
@@ -287,7 +283,7 @@ class MainWindow(wx.Frame):
         result = event.GetEventObject()
         if result.GetValue():
             self.database['auto-run'] = True
-        self.update_and_save_database()
+        fetch.update_and_save_database(self.database)
 
     def clean_on_checked(self, event):
         '''An event for setting whether clean mode is available'''
@@ -299,7 +295,7 @@ class MainWindow(wx.Frame):
             self.database['clean-run'] = True
             self.button4.Enable()
             self.button5.Enable()
-        self.update_and_save_database()
+        fetch.update_and_save_database(self.database)
 
     def on_quit(self, event):
         '''An event for exiting program when it is closed'''
@@ -371,14 +367,6 @@ class MainWindow(wx.Frame):
     def on_stop(self, event):
         '''An event it the program stop slideshow'''
         self.thread_state = False
-
-    def update_and_save_database(self):
-        '''Save config data to external file config.json'''
-        local_directory = os.path.dirname(os.path.abspath(__file__))
-        database_name = "config.json"
-        database_path = os.path.join(local_directory, database_name)
-        with open(database_path, 'w') as outfile:
-            json.dump(self.database, outfile)
 
 
 class SettingWindow(wx.Dialog):

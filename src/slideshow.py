@@ -1,27 +1,20 @@
 '''Use for TV wall'''
-import json
 import os
 import threading
 import time
-import pythoncom
+
 import wx
+
+import fetch
+import pythoncom
 import win32com.client
 
 
 class SlideShow():
     '''Run slideshow'''
     def __init__(self):
-        self.database = self.fetch_data()
+        self.database = fetch.fetch_data()
         self.run_ppt_app()
-
-    @staticmethod
-    def fetch_data():
-        '''Load config data from external file config.json'''
-        local_directory = os.path.dirname(os.path.abspath(__file__))
-        database_name = "config.json"
-        database_path = os.path.join(local_directory, database_name)
-        result = json.load(open(database_path))
-        return result
 
     def run_ppt_app(self):
         '''main script'''
@@ -81,7 +74,6 @@ class SlideShow():
                 SlideWarn(text="沒有投影片可以播放。")
         else:
             SlideWarn(text="目標資料夾沒有 PowerPoint 檔案。")
-            
 
     @staticmethod
     def run_in_thread(ppt_id):
@@ -192,7 +184,8 @@ class SlideWarn():
         '''Mian control center'''
         self.warn_dialog(text)
 
-    def warn_dialog(self, text):
+    @staticmethod
+    def warn_dialog(text):
         '''GUI of errir show to user'''
         wx.MessageBox(text, "錯誤", wx.OK | wx.ICON_ERROR)
 

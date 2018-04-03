@@ -1,28 +1,20 @@
 '''Use for cleaning files'''
 import datetime
-import json
 import os
 import time
+
+import fetch
 
 
 class Cleaner():
     '''Run cleaner'''
     def __init__(self):
         # fetch config.json
-        self.database = self.fetch_data()
+        self.database = fetch.fetch_data()
         # collect value and key for all ppt files
         file_list = self.set_file_list(path=self.database["path"])
         # run cleaner
         self.run_cleaner(file_list)
-
-    @staticmethod
-    def fetch_data():
-        '''Load config data from external file config.json'''
-        local_directory = os.path.dirname(os.path.abspath(__file__))
-        database_name = "config.json"
-        database_path = os.path.join(local_directory, database_name)
-        result = json.load(open(database_path))
-        return result
 
     def set_file_list(self, path):
         '''Set value for file dict'''
