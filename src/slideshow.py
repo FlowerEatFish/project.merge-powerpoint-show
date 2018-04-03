@@ -44,8 +44,12 @@ class SlideShow():
 
     def start_app(self, app):
         '''set exception for showing error to user'''
-        name = self.set_main_ppt_name("main-slide")
+        # set path for collecting ppt
         path = self.set_main_ppt_path(self.database["path"])
+        # set path and name for creating temp and main ppt
+        py_path = os.path.dirname(os.path.abspath(__file__))
+        temp_file_path = os.path.join(py_path, 'temp')
+        name = self.set_main_ppt_name("main-slide")
         # create new and save ppt
         new_ppt = app.Presentations.Add()
         self.save_new_ppt(new_ppt, path, name)
@@ -59,11 +63,13 @@ class SlideShow():
                 file_path = os.path.join(path, _file)
                 temp_ppt = app.Presentations.Open(file_path)
                 count = temp_ppt.Slides.Count
+                temp_ppt.SaveAs(temp_file_path, 36)
                 temp_ppt.Close()
                 if count > 0:
                     total_slide_count = total_slide_count + count
+                    temp_file_pptx = os.path.join(py_path, 'temp.pptx')
                     new_ppt.Slides.InsertFromFile(
-                        file_path, 0, 1, count)
+                        temp_file_pptx, 0, 1, count)
             # set animation for slideshow
             self.set_slide_animation(new_ppt)
             # save and slideshow ppt
