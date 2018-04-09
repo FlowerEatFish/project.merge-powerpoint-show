@@ -159,7 +159,7 @@ class MainWindow(wx.Frame):
                    flag=wx.ALIGN_LEFT | wx.ALL, border=5)
 
         text11 = wx.StaticText(
-            self, label="[ Version ] 1.0")
+            self, label="[ Version ] 1.1")
         sizer1.Add(text11, pos=(8, 4), span=(1, 1),
                    flag=wx.ALIGN_RIGHT | wx.ALL, border=5)
 

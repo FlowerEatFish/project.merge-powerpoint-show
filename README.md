@@ -1,6 +1,6 @@
 ![version][1] ![license][2]
 
-[1]: https://img.shields.io/badge/version-1.0-green.svg
+[1]: https://img.shields.io/badge/version-1.1-green.svg
 [2]: https://img.shields.io/badge/license-GPLv3-blue.svg
 
 ## 初始介面：
