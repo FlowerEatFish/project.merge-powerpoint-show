@@ -45,6 +45,7 @@ class SlideShow():
         name = self.set_main_ppt_name("main")
         # create new and save ppt
         new_ppt = app.Presentations.Add()
+        app.WindowState = 2
         self.save_new_ppt(new_ppt, py_path, name)
         # add slides from other ppt into main ppt
         all_ppt = self.collect_local_ppt(
