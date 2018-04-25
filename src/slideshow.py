@@ -54,7 +54,7 @@ class SlideShow():
             total_slide_count = 0
             for _file in all_ppt:
                 file_path = os.path.join(path, _file)
-                temp_ppt = app.Presentations.Open(file_path)
+                temp_ppt = app.Presentations.Open(file_path, WithWindow=0)
                 count = temp_ppt.Slides.Count
                 temp_ppt.SaveAs(temp_file_path, 36)
                 temp_ppt.Close()
